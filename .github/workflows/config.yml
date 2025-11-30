@@ -63,7 +63,7 @@ jobs:
         continue-on-error: false
 
       - name: Upload Terraform Plan
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tfplan
           path: terraform/tfplan
@@ -96,7 +96,7 @@ jobs:
         working-directory: ./terraform
 
       - name: Download Terraform Plan
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: tfplan
           path: terraform/
@@ -120,7 +120,7 @@ jobs:
           echo "${{ steps.tf-outputs.outputs.cluster_name }}" > cluster_name.txt
 
       - name: Upload Terraform Outputs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: terraform-outputs
           path: |
@@ -146,7 +146,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Download Terraform Outputs
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: terraform-outputs
 
@@ -177,7 +177,7 @@ jobs:
         run: echo "${{ github.sha }}" > image_tag.txt
 
       - name: Upload Image Tag
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: image-tag
           path: image_tag.txt
@@ -200,12 +200,12 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Download Terraform Outputs
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: terraform-outputs
 
       - name: Download Image Tag
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: image-tag
 
@@ -287,7 +287,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Download Terraform Outputs
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: terraform-outputs
 

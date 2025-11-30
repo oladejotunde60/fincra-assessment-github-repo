@@ -52,3 +52,6 @@ logs/
 tmp/
 temp/
 *.tmp
+
+# Internal documentation
+ARTIFACT_ACTIONS_UPDATE.md
