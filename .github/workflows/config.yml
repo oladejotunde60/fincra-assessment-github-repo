@@ -1,0 +1,354 @@
+name: Deploy Flask App to EKS
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  AWS_REGION: eu-west-1
+  EKS_CLUSTER_NAME: fincra-test-eks-cluster
+  ECR_REPOSITORY: flask-app
+  TERRAFORM_VERSION: 1.5.7
+
+jobs:
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    outputs:
+      ecr_repository: ${{ steps.tf-output.outputs.ecr_repository }}
+      alb_sg_id: ${{ steps.tf-output.outputs.alb_sg_id }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Terraform Format Check
+        id: fmt
+        run: terraform fmt -check -recursive
+        working-directory: ./terraform
+        continue-on-error: true
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        working-directory: ./terraform
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+        working-directory: ./terraform
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan -no-color -out=tfplan
+        working-directory: ./terraform
+        continue-on-error: false
+
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v3
+        with:
+          name: tfplan
+          path: terraform/tfplan
+
+  terraform-apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform
+
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v3
+        with:
+          name: tfplan
+          path: terraform/
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+        working-directory: ./terraform
+
+      - name: Get Terraform Outputs
+        id: tf-outputs
+        run: |
+          echo "ecr_repository=$(terraform output -raw ecr_repository_url)" >> $GITHUB_OUTPUT
+          echo "alb_sg_id=$(terraform output -raw alb_security_group_id)" >> $GITHUB_OUTPUT
+          echo "cluster_name=$(terraform output -raw cluster_name)" >> $GITHUB_OUTPUT
+        working-directory: ./terraform
+
+      - name: Save outputs for next job
+        run: |
+          echo "${{ steps.tf-outputs.outputs.ecr_repository }}" > ecr_repository.txt
+          echo "${{ steps.tf-outputs.outputs.alb_sg_id }}" > alb_sg_id.txt
+          echo "${{ steps.tf-outputs.outputs.cluster_name }}" > cluster_name.txt
+
+      - name: Upload Terraform Outputs
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-outputs
+          path: |
+            ecr_repository.txt
+            alb_sg_id.txt
+            cluster_name.txt
+
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    needs: terraform-apply
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Download Terraform Outputs
+        uses: actions/download-artifact@v3
+        with:
+          name: terraform-outputs
+
+      - name: Set ECR Repository URL
+        id: ecr-url
+        run: |
+          ECR_REPO=$(cat ecr_repository.txt)
+          echo "ecr_repository=$ECR_REPO" >> $GITHUB_OUTPUT
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker buildx create --use || true
+          docker buildx build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --load .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Save Image Tag
+        run: echo "${{ github.sha }}" > image_tag.txt
+
+      - name: Upload Image Tag
+        uses: actions/upload-artifact@v3
+        with:
+          name: image-tag
+          path: image_tag.txt
+
+  deploy-to-eks:
+    name: Deploy to EKS
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Download Terraform Outputs
+        uses: actions/download-artifact@v3
+        with:
+          name: terraform-outputs
+
+      - name: Download Image Tag
+        uses: actions/download-artifact@v3
+        with:
+          name: image-tag
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Update kubeconfig
+        run: |
+          CLUSTER_NAME=$(cat cluster_name.txt)
+          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name $CLUSTER_NAME
+
+      - name: Wait for EKS cluster to be ready
+        run: |
+          echo "Waiting for EKS cluster to be fully ready..."
+          kubectl wait --for=condition=Ready nodes --all --timeout=300s || true
+          kubectl get nodes
+
+      - name: Apply CoreDNS Fargate Fix
+        run: |
+          echo "Applying CoreDNS Fargate toleration fix..."
+          chmod +x scripts/fix-coredns.sh
+          ./scripts/fix-coredns.sh || echo "CoreDNS already configured or not found"
+
+      - name: Prepare Kubernetes manifests
+        run: |
+          ECR_REPO=$(cat ecr_repository.txt)
+          IMAGE_TAG=$(cat image_tag.txt)
+          ALB_SG=$(cat alb_sg_id.txt)
+          
+          # Update deployment image with specific tag
+          sed -i "s|image:.*|image: $ECR_REPO:$IMAGE_TAG|g" k8s/deployment.yaml
+          
+          # Update ingress security group if it exists
+          sed -i "s|alb.ingress.kubernetes.io/security-groups:.*|alb.ingress.kubernetes.io/security-groups: $ALB_SG|g" k8s/ingress.yaml
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/namespace.yaml
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+          kubectl apply -f k8s/ingress.yaml
+
+      - name: Wait for deployment to be ready
+        run: |
+          kubectl rollout status deployment/flask-app -n flask-app --timeout=300s
+
+      - name: Get deployment status
+        run: |
+          echo "=== Pods ==="
+          kubectl get pods -n flask-app
+          echo "=== Services ==="
+          kubectl get svc -n flask-app
+          echo "=== Ingress ==="
+          kubectl get ingress -n flask-app
+
+      - name: Get ALB DNS name
+        id: alb-dns
+        run: |
+          echo "Waiting for ALB to be provisioned..."
+          sleep 60
+          ALB_DNS=$(kubectl get ingress flask-ingress -n flask-app -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          echo "ALB DNS: $ALB_DNS"
+          echo "alb_dns=$ALB_DNS" >> $GITHUB_OUTPUT
+
+  smoke-test:
+    name: Smoke Test
+    runs-on: ubuntu-latest
+    needs: deploy-to-eks
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Download Terraform Outputs
+        uses: actions/download-artifact@v3
+        with:
+          name: terraform-outputs
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Update kubeconfig
+        run: |
+          CLUSTER_NAME=$(cat cluster_name.txt)
+          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name $CLUSTER_NAME
+
+      - name: Get ALB DNS and test endpoint
+        run: |
+          echo "Waiting for ALB to become fully operational..."
+          sleep 120
+          
+          ALB_DNS=$(kubectl get ingress flask-ingress -n flask-app -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          
+          if [ -z "$ALB_DNS" ]; then
+            echo "ERROR: ALB DNS not found"
+            exit 1
+          fi
+          
+          echo "ALB DNS: $ALB_DNS"
+          echo "Testing endpoint..."
+          
+          # Retry logic for ALB health
+          max_attempts=10
+          attempt=1
+          
+          while [ $attempt -le $max_attempts ]; do
+            echo "Attempt $attempt of $max_attempts"
+            
+            response=$(curl -s -o /dev/null -w "%{http_code}" http://$ALB_DNS/ || echo "000")
+            
+            if [ "$response" = "200" ]; then
+              echo "✅ Success! Got HTTP 200"
+              content=$(curl -s http://$ALB_DNS/)
+              echo "Response: $content"
+              
+              if echo "$content" | grep -q "Hello, from MAX!"; then
+                echo "✅ Application is responding correctly!"
+                exit 0
+              else
+                echo "⚠️  Got 200 but unexpected content"
+              fi
+            else
+              echo "❌ Got HTTP $response, retrying in 30s..."
+            fi
+            
+            attempt=$((attempt + 1))
+            sleep 30
+          done
+          
+          echo "❌ Smoke test failed after $max_attempts attempts"
+          exit 1
+
+      - name: Verify security group rules
+        run: |
+          ALB_SG=$(cat alb_sg_id.txt)
+          echo "Verifying security group rules for: $ALB_SG"
+          aws ec2 describe-security-groups --group-ids $ALB_SG --region ${{ env.AWS_REGION }}

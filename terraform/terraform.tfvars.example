@@ -1,0 +1,9 @@
+# Copy this file to terraform.tfvars and customize values
+# DO NOT commit terraform.tfvars to version control
+
+aws_region         = "eu-west-1"
+environment        = "dev"
+cluster_name       = "fincra-test-eks-cluster"
+vpc_cidr           = "10.0.0.0/16"
+kubernetes_version = "1.28"
+app_namespace      = "flask-app"
