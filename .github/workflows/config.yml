@@ -337,7 +337,7 @@ jobs:
                 echo "⚠️  Got 200 but unexpected content"
               fi
             else
-              echo "❌ Got HTTP $response, retrying in 30s..."
+              echo "❌ Got HTTP $response, retrying in 30s....."
             fi
             
             attempt=$((attempt + 1))
