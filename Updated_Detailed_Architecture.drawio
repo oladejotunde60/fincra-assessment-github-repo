@@ -1,0 +1,300 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0" version="29.2.1">
+  <diagram name="Fincra-Flask-EKS-Architecture" id="fincra-eks-arch">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1920" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;fontStyle=1;fontColor=#000000;" value="Fincra Flask Application - AWS EKS Fargate Architecture" vertex="1">
+          <mxGeometry height="40" width="800" x="560" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="dev-section" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=14;align=left;verticalAlign=top;fontStyle=1;dashed=1;dashPattern=8 8;" value="Development &amp; CI/CD" vertex="1">
+          <mxGeometry height="380" width="460" x="90" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="developer" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;" value="👨‍💻 Developer" vertex="1">
+          <mxGeometry height="60" width="140" x="120" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="github-repo" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;verticalAlign=top;fontStyle=1;" value="GitHub Repository&lt;br&gt;fincra-assessment-github-repo&lt;br&gt;&lt;br&gt;📁 app.py&lt;br&gt;📁 Dockerfile&lt;br&gt;📁 requirements.txt&lt;br&gt;📁 terraform/&lt;br&gt;📁 k8s/&lt;br&gt;📁 .github/workflows/" vertex="1">
+          <mxGeometry height="180" width="200" x="320" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="github-actions" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=top;fontStyle=1;" value="GitHub Actions CI/CD Pipeline" vertex="1">
+          <mxGeometry height="200" width="380" x="120" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="job1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontStyle=1;align=center;" value="1️⃣ Terraform Plan&lt;br&gt;• fmt check&lt;br&gt;• init&lt;br&gt;• validate&lt;br&gt;• plan" vertex="1">
+          <mxGeometry height="90" width="100" x="140" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="job2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontStyle=1;align=center;" value="2️⃣ Terraform Apply&lt;br&gt;• Infrastructure&lt;br&gt;• VPC/Subnets&lt;br&gt;• EKS Cluster&lt;br&gt;• Security Groups" vertex="1">
+          <mxGeometry height="90" width="100" x="140" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="job3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontStyle=1;align=center;" value="3️⃣ Build &amp; Push&lt;br&gt;• Docker build&lt;br&gt;• ECR login&lt;br&gt;• Tag image&lt;br&gt;• Push to ECR" vertex="1">
+          <mxGeometry height="90" width="100" x="260" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="job4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontStyle=1;align=center;" value="4️⃣ Deploy to EKS&lt;br&gt;• Update kubeconfig&lt;br&gt;• Apply k8s manifests&lt;br&gt;• namespace&lt;br&gt;• deployment&lt;br&gt;• service" vertex="1">
+          <mxGeometry height="90" width="100" x="260" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="job5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontStyle=1;align=center;" value="5️⃣ Verify Deploy&lt;br&gt;• Wait for ALB&lt;br&gt;• Health checks&lt;br&gt;• Smoke tests&lt;br&gt;• Verify endpoint" vertex="1">
+          <mxGeometry height="90" width="100" x="380" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-j1-j2" edge="1" parent="1" source="job1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=classic;endFill=1;" target="job2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-j1-j3" edge="1" parent="1" source="job1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=classic;endFill=1;" target="job3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-j3-j4" edge="1" parent="1" source="job3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=classic;endFill=1;" target="job4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-j2-j5" edge="1" parent="1" source="job2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=classic;endFill=1;" target="job5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="190" y="500" />
+              <mxPoint x="430" y="500" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow-j4-j5" edge="1" parent="1" source="job4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=classic;endFill=1;" target="job5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="310" y="500" />
+              <mxPoint x="430" y="500" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow-dev-github" edge="1" parent="1" source="developer" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=classic;endFill=1;" target="github-repo">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="internet-users" parent="1" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1" value="🌐 Internet Users" vertex="1">
+          <mxGeometry height="100" width="200" x="760" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="aws-cloud" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#ff9900;fontSize=16;align=left;verticalAlign=top;fontStyle=1;dashed=1;dashPattern=8 8;" value="AWS Cloud (eu-west-1)" vertex="1">
+          <mxGeometry height="1040" width="1240" x="600" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="remote-state" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;align=center;verticalAlign=top;fontStyle=1;" value="Terraform Remote State Backend" vertex="1">
+          <mxGeometry height="120" width="280" x="640" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="s3-state" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;fontStyle=1;" value="S3 Bucket&lt;br&gt;fincra-terraform-state-*&lt;br&gt;📄 terraform.tfstate&lt;br&gt;🔒 Versioning enabled" vertex="1">
+          <mxGeometry height="70" width="120" x="660" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="dynamodb-lock" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;fontStyle=1;" value="DynamoDB Table&lt;br&gt;fincra-terraform-state-lock&lt;br&gt;🔐 State locking" vertex="1">
+          <mxGeometry height="70" width="120" x="790" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="ecr" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=center;verticalAlign=top;fontStyle=1;" value="Amazon ECR&lt;br&gt;Container Registry&lt;br&gt;&lt;br&gt;📦 Repository: flask-app&lt;br&gt;🏷️ latest tag&lt;br&gt;🔍 Image scanning&lt;br&gt;♻️ Lifecycle: 5 images" vertex="1">
+          <mxGeometry height="140" width="200" x="980" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="vpc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=14;align=left;verticalAlign=top;fontStyle=1;dashed=1;dashPattern=8 8;" value="VPC (10.0.0.0/16)&lt;br&gt;fincra-test-eks-cluster-vpc" vertex="1">
+          <mxGeometry height="780" width="1160" x="640" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="public-subnets" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=left;verticalAlign=top;fontStyle=1;" value="Public Subnets (3 AZs)&lt;br&gt;10.0.0.0/24, 10.0.1.0/24, 10.0.2.0/24" vertex="1">
+          <mxGeometry height="280" width="500" x="680" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="igw" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" value="Internet Gateway&lt;br&gt;🌐 IGW" vertex="1">
+          <mxGeometry height="60" width="140" x="720" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="nat" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" value="NAT Gateway&lt;br&gt;🔌 NAT (AZ-1)&lt;br&gt;Elastic IP" vertex="1">
+          <mxGeometry height="70" width="140" x="720" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="alb" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;verticalAlign=top;fontStyle=1;" value="Application Load Balancer&lt;br&gt;(Internet-facing)&lt;br&gt;&lt;br&gt;🔒 Security Group:&lt;br&gt;✅ 0.0.0.0/0 → 80 (HTTP)&lt;br&gt;✅ 0.0.0.0/0 → 443 (HTTPS)&lt;br&gt;✅ 0.0.0.0/0 → ICMP&lt;br&gt;✅ ALL → 0.0.0.0/0 (egress)" vertex="1">
+          <mxGeometry height="160" width="220" x="920" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="public-rt" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontStyle=1;" value="Public Route Table&lt;br&gt;📍 0.0.0.0/0 → IGW" vertex="1">
+          <mxGeometry height="50" width="140" x="900" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="private-subnets" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;align=left;verticalAlign=top;fontStyle=1;" value="Private Subnets (3 AZs)&lt;br&gt;10.0.3.0/24, 10.0.4.0/24, 10.0.5.0/24" vertex="1">
+          <mxGeometry height="350" width="1080" x="680" y="890" as="geometry" />
+        </mxCell>
+        <mxCell id="private-rt" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;fontStyle=1;" value="Private Route Table&lt;br&gt;📍 0.0.0.0/0 → NAT" vertex="1">
+          <mxGeometry height="50" width="140" x="900" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="eks-cluster" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;align=left;verticalAlign=top;fontStyle=1;" value="EKS Fargate Cluster&lt;br&gt;fincra-test-eks-cluster&lt;br&gt;Version: 1.34" vertex="1">
+          <mxGeometry height="270" width="1000" x="720" y="940" as="geometry" />
+        </mxCell>
+        <mxCell id="eks-control" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;align=left;verticalAlign=top;fontStyle=1;" value="EKS Control Plane&lt;br&gt;(AWS Managed)&lt;br&gt;&lt;br&gt;🔒 Cluster Security Group:&lt;br&gt;✅ VPC CIDR → ALL&lt;br&gt;✅ 0.0.0.0/0 → ICMP&lt;br&gt;✅ ALL → 0.0.0.0/0 (egress)" vertex="1">
+          <mxGeometry height="120" width="200" x="760" y="990" as="geometry" />
+        </mxCell>
+        <mxCell id="fargate-profile" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;align=left;verticalAlign=top;fontStyle=1;" value="Fargate Profile&lt;br&gt;flask-app-profile&lt;br&gt;&lt;br&gt;📋 Namespace: flask-app&lt;br&gt;⚙️ Pod Execution Role&lt;br&gt;🔐 IRSA enabled" vertex="1">
+          <mxGeometry height="90" width="200" x="760" y="1130" as="geometry" />
+        </mxCell>
+        <mxCell id="k8s-namespace" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=center;verticalAlign=top;fontStyle=1;" value="Kubernetes Namespace: flask-app" vertex="1">
+          <mxGeometry height="210" width="680" x="1000" y="990" as="geometry" />
+        </mxCell>
+        <mxCell id="flask-deployment" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;fontSize=10;align=center;verticalAlign=top;fontStyle=1;" value="Deployment: flask-app&lt;br&gt;Replicas: 2" vertex="1">
+          <mxGeometry height="150" width="280" x="1040" y="1030" as="geometry" />
+        </mxCell>
+        <mxCell id="pod1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;align=left;verticalAlign=top;fontStyle=1;" value="Pod 1 (Fargate)&lt;br&gt;flask-app-xxx-1&lt;br&gt;&lt;br&gt;📦 Image: ECR/flask-app:latest&lt;br&gt;🔌 Port: 80&lt;br&gt;💾 Memory: 256Mi-512Mi&lt;br&gt;⚡ CPU: 250m-500m&lt;br&gt;❤️ Liveness probe&lt;br&gt;✅ Readiness probe" vertex="1">
+          <mxGeometry height="100" width="120" x="1060" y="1070" as="geometry" />
+        </mxCell>
+        <mxCell id="pod2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;align=left;verticalAlign=top;fontStyle=1;" value="Pod 2 (Fargate)&lt;br&gt;flask-app-xxx-2&lt;br&gt;&lt;br&gt;📦 Image: ECR/flask-app:latest&lt;br&gt;🔌 Port: 80&lt;br&gt;💾 Memory: 256Mi-512Mi&lt;br&gt;⚡ CPU: 250m-500m&lt;br&gt;❤️ Liveness probe&lt;br&gt;✅ Readiness probe" vertex="1">
+          <mxGeometry height="100" width="120" x="1190" y="1070" as="geometry" />
+        </mxCell>
+        <mxCell id="k8s-service" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;fontStyle=1;align=center;" value="Service: flask-service&lt;br&gt;Type: NodePort&lt;br&gt;Port: 80 → 80" vertex="1">
+          <mxGeometry height="70" width="140" x="1360" y="1030" as="geometry" />
+        </mxCell>
+        <mxCell id="k8s-ingress" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;align=left;verticalAlign=top;fontStyle=1;" value="Ingress: flask-ingress&lt;br&gt;Class: alb&lt;br&gt;&lt;br&gt;🌐 Scheme: internet-facing&lt;br&gt;🎯 Target: IP&lt;br&gt;🔍 Health checks&lt;br&gt;🔒 Security group ref" vertex="1">
+          <mxGeometry height="150" width="120" x="1540" y="1030" as="geometry" />
+        </mxCell>
+        <mxCell id="lb-controller" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;align=center;verticalAlign=top;fontStyle=1;" value="AWS Load Balancer&lt;br&gt;Controller&lt;br&gt;(Helm Chart)&lt;br&gt;&lt;br&gt;🔧 IRSA Role&lt;br&gt;📋 Service Account" vertex="1">
+          <mxGeometry height="80" width="140" x="1360" y="1120" as="geometry" />
+        </mxCell>
+        <mxCell id="iam-section" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;align=center;verticalAlign=top;fontStyle=1;" value="IAM Roles &amp; Policies" vertex="1">
+          <mxGeometry height="140" width="590" x="1210" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="iam-cluster" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontStyle=1;" value="EKS Cluster Role&lt;br&gt;AmazonEKSClusterPolicy" vertex="1">
+          <mxGeometry height="50" width="130" x="1220" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="iam-fargate" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=9;fontStyle=1;" value="&lt;font style=&quot;font-size: 6px;&quot;&gt;Fargate Pod Role&lt;br&gt;AmazonEKSFargatePodExecutionRolePolicy&lt;/font&gt;" vertex="1">
+          <mxGeometry height="50" width="150" x="1360" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="iam-lb" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontStyle=1;" value="LB Controller Role&lt;br&gt;IRSA + Inline Policy" vertex="1">
+          <mxGeometry height="50" width="120" x="1520" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="iam-oidc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontStyle=1;" value="OIDC Provider&lt;br&gt;EKS Identity" vertex="1">
+          <mxGeometry height="50" width="120" x="1650" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-internet-alb" edge="1" parent="1" source="internet-users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;endArrow=classic;endFill=1;strokeColor=#ff0000;" target="alb">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="860" y="250" />
+              <mxPoint x="1030" y="250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label-http" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#ff0000;fontStyle=1" value="HTTP Request" vertex="1">
+          <mxGeometry height="20" width="100" x="890" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-alb-ingress" edge="1" parent="1" source="alb" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;endArrow=classic;endFill=1;strokeColor=#ff0000;" target="k8s-ingress">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1030" y="820" />
+              <mxPoint x="1600" y="820" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow-ingress-service" edge="1" parent="1" source="k8s-ingress" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=classic;endFill=1;strokeColor=#0066cc;" target="k8s-service">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-service-pod1" edge="1" parent="1" source="k8s-service" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=classic;endFill=1;strokeColor=#0066cc;" target="pod1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1430" y="1100" />
+              <mxPoint x="1120" y="1100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow-service-pod2" edge="1" parent="1" source="k8s-service" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=classic;endFill=1;strokeColor=#0066cc;" target="pod2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1430" y="1100" />
+              <mxPoint x="1250" y="1100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow-cicd-tf" edge="1" parent="1" source="github-actions" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=classic;endFill=1;strokeColor=#00cc00;dashed=1;" target="remote-state">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="550" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow-cicd-ecr" edge="1" parent="1" source="github-actions" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=classic;endFill=1;strokeColor=#00cc00;dashed=1;" target="ecr">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="550" y="390" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow-cicd-eks" edge="1" parent="1" source="github-actions" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=classic;endFill=1;strokeColor=#00cc00;dashed=1;" target="eks-cluster">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="550" y="1075" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label-deploy" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#00cc00;fontStyle=1" value="Deploy" vertex="1">
+          <mxGeometry height="20" width="60" x="560" y="1050" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-ecr-pods" edge="1" parent="1" source="ecr" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=classic;endFill=1;strokeColor=#9900cc;dashed=1;" target="flask-deployment">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1080" y="460" />
+              <mxPoint x="1180" y="460" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label-pull" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#9900cc;fontStyle=1" value="Pull Image" vertex="1">
+          <mxGeometry height="20" width="80" x="1100" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="response" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;align=center;" value="Response: &quot;Hello, from MAX!&quot;" vertex="1">
+          <mxGeometry height="40" width="270" x="1040" y="1210" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;align=center;verticalAlign=top;fontStyle=1" value="LEGEND" vertex="1">
+          <mxGeometry height="280" width="460" x="80" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-public" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" value="Public Subnets" vertex="1">
+          <mxGeometry height="30" width="120" x="110" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-private" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" value="Private Subnets" vertex="1">
+          <mxGeometry height="30" width="120" x="110" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-eks" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="EKS Resources" vertex="1">
+          <mxGeometry height="30" width="120" x="110" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-alb" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" value="Load Balancer" vertex="1">
+          <mxGeometry height="30" width="120" x="110" y="680" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-k8s" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" value="Kubernetes" vertex="1">
+          <mxGeometry height="30" width="120" x="110" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-traffic" edge="1" parent="1" style="endArrow=classic;html=1;strokeWidth=3;fontSize=10;strokeColor=#ff0000;" value="User Traffic">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="260" y="575" as="sourcePoint" />
+            <mxPoint x="360" y="575" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-k8s-traffic" edge="1" parent="1" style="endArrow=classic;html=1;strokeWidth=2;fontSize=10;strokeColor=#0066cc;" value="K8s Traffic">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="260" y="615" as="sourcePoint" />
+            <mxPoint x="360" y="615" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-cicd" edge="1" parent="1" style="endArrow=classic;html=1;strokeWidth=2;dashed=1;fontSize=10;strokeColor=#00cc00;" value="CI/CD Deploy">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="260" y="655" as="sourcePoint" />
+            <mxPoint x="360" y="655" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-pull" edge="1" parent="1" style="endArrow=classic;html=1;strokeWidth=2;dashed=1;fontSize=10;strokeColor=#9900cc;" value="Image Pull">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="260" y="695" as="sourcePoint" />
+            <mxPoint x="360" y="695" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="features" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;align=center;verticalAlign=top;fontStyle=1" value="KEY FEATURES" vertex="1">
+          <mxGeometry height="190" width="240" x="280" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="feat1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" value="✅ Fully automated CI/CD" vertex="1">
+          <mxGeometry height="20" width="220" x="290" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="feat2" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" value="✅ Terraform IaC (remote state)" vertex="1">
+          <mxGeometry height="20" width="220" x="290" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="feat3" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" value="✅ EKS Fargate (serverless)" vertex="1">
+          <mxGeometry height="20" width="220" x="290" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="feat4" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" value="✅ Multi-AZ high availability" vertex="1">
+          <mxGeometry height="20" width="220" x="290" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="feat5" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" value="✅ Security groups (defense)" vertex="1">
+          <mxGeometry height="20" width="220" x="290" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="feat6" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" value="✅ ALB with health checks" vertex="1">
+          <mxGeometry height="20" width="220" x="290" y="690" as="geometry" />
+        </mxCell>
+        <mxCell id="feat7" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" value="✅ Container registry (ECR)" vertex="1">
+          <mxGeometry height="20" width="220" x="290" y="710" as="geometry" />
+        </mxCell>
+        <mxCell id="feat8" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" value="✅ IRSA for secure access" vertex="1">
+          <mxGeometry height="20" width="220" x="290" y="730" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
