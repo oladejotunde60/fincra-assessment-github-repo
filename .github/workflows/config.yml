@@ -95,12 +95,6 @@ jobs:
         run: terraform init
         working-directory: ./terraform
 
-      - name: Download Terraform Plan
-        uses: actions/download-artifact@v4
-        with:
-          name: tfplan
-          path: terraform/
-
       - name: Import Existing Resources
         run: |
           # Import ECR Repository
@@ -118,9 +112,13 @@ jobs:
             terraform import -input=false aws_iam_policy.aws_load_balancer_controller "$POLICY_ARN" || true
           fi
           
-          echo "Import step completed. Resources now in Terraform state."
+          echo "✅ Import step completed. Resources now in Terraform state."
         working-directory: ./terraform
         continue-on-error: true
+
+      - name: Terraform Plan (After Import)
+        run: terraform plan -no-color -out=tfplan
+        working-directory: ./terraform
 
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
