@@ -101,6 +101,27 @@ jobs:
           name: tfplan
           path: terraform/
 
+      - name: Import Existing Resources
+        run: |
+          # Import ECR Repository
+          terraform import -input=false aws_ecr_repository.flask_app flask-app || true
+          
+          # Import IAM Cluster Role
+          terraform import -input=false aws_iam_role.eks_cluster fincra-test-eks-cluster-cluster-role || true
+          
+          # Import Fargate Pod Execution Role
+          terraform import -input=false aws_iam_role.fargate_pod_execution fincra-test-eks-cluster-fargate-pod-execution-role || true
+          
+          # Import AWS Load Balancer Controller IAM Policy
+          POLICY_ARN=$(aws iam list-policies --query "Policies[?PolicyName=='fincra-test-eks-cluster-AWSLoadBalancerControllerIAMPolicy'].Arn" --output text)
+          if [ ! -z "$POLICY_ARN" ]; then
+            terraform import -input=false aws_iam_policy.aws_load_balancer_controller "$POLICY_ARN" || true
+          fi
+          
+          echo "Import step completed. Resources now in Terraform state."
+        working-directory: ./terraform
+        continue-on-error: true
+
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
         working-directory: ./terraform
