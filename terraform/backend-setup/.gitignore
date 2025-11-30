@@ -1,0 +1,14 @@
+# Terraform files
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfplan
+backend.tfplan
+
+# Output files
+backend-config.txt
+
+# Logs
+*.log
+crash.log
