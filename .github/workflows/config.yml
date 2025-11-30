@@ -95,42 +95,7 @@ jobs:
         run: terraform init
         working-directory: ./terraform
 
-      - name: Import Existing Resources
-        run: |
-          # Set environment variables to skip provider warnings
-          export TF_LOG=ERROR
-          
-          # Import ECR Repository
-          echo "Importing ECR repository..."
-          terraform import -input=false -lock=false aws_ecr_repository.flask_app flask-app 2>/dev/null || echo "ECR already in state or doesn't exist"
-          
-          # Import IAM Cluster Role
-          echo "Importing EKS cluster IAM role..."
-          terraform import -input=false -lock=false aws_iam_role.eks_cluster fincra-test-eks-cluster-cluster-role 2>/dev/null || echo "Cluster role already in state or doesn't exist"
-          
-          # Import Fargate Pod Execution Role
-          echo "Importing Fargate pod execution role..."
-          terraform import -input=false -lock=false aws_iam_role.fargate_pod_execution fincra-test-eks-cluster-fargate-pod-execution-role 2>/dev/null || echo "Fargate role already in state or doesn't exist"
-          
-          # Import AWS Load Balancer Controller IAM Policy
-          echo "Importing ALB controller IAM policy..."
-          POLICY_ARN=$(aws iam list-policies --query "Policies[?PolicyName=='fincra-test-eks-cluster-AWSLoadBalancerControllerIAMPolicy'].Arn" --output text 2>/dev/null)
-          if [ ! -z "$POLICY_ARN" ]; then
-            terraform import -input=false -lock=false aws_iam_policy.aws_load_balancer_controller "$POLICY_ARN" 2>/dev/null || echo "ALB policy already in state or doesn't exist"
-          fi
-          
-          # Check if EKS cluster exists and import if needed
-          echo "Checking for existing EKS cluster..."
-          if aws eks describe-cluster --name fincra-test-eks-cluster --region eu-west-1 >/dev/null 2>&1; then
-            echo "EKS cluster exists, importing..."
-            terraform import -input=false -lock=false aws_eks_cluster.main fincra-test-eks-cluster 2>/dev/null || echo "EKS cluster already in state"
-          fi
-          
-          echo "✅ Import step completed. Resources now in Terraform state."
-        working-directory: ./terraform
-        continue-on-error: true
-
-      - name: Terraform Plan (After Import)
+      - name: Terraform Plan
         run: terraform plan -no-color -out=tfplan
         working-directory: ./terraform
 
