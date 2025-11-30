@@ -16,12 +16,11 @@ terraform {
     }
   }
 
-  # Optional: Uncomment for remote state management
-  # backend "s3" {
-  #   bucket         = "your-terraform-state-bucket"
-  #   key            = "eks-flask-app/terraform.tfstate"
-  #   region         = "us-east-1"
-  #   dynamodb_table = "terraform-state-lock"
-  #   encrypt        = true
-  # }
+  backend "s3" {
+      bucket         = "fincra-terraform-state-837644358342"
+      key            = "eks-flask-app/terraform.tfstate"
+      region         = "eu-west-1"
+      dynamodb_table = "fincra-terraform-state-lock"
+      encrypt        = true
+}
 }
